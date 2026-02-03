@@ -12,3 +12,11 @@ override.tf.json
 
 # AI ops runtime artifacts (generated)
 .aiops/
+
+# Terraform local var files (often contain env-specific values)
+*.tfvars
+*.tfvars.json
+
+# Terraform CLI crash artifacts
+.terraform.tfstate.lock.info
+
