@@ -1,0 +1,41 @@
+name: Terraform PR Checks
+
+on:
+  pull_request:
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform fmt (check)
+        run: terraform fmt -check -recursive
+
+      - name: Terraform init (dev)
+        working-directory: terraform/envs/dev
+        run: terraform init -backend=false
+
+      - name: Terraform validate (dev)
+        working-directory: terraform/envs/dev
+        run: terraform validate
+
+      - name: Terraform plan (dev, best-effort)
+        working-directory: terraform/envs/dev
+        continue-on-error: true
+        run: terraform plan -lock=false -refresh=false
+
+      - name: Terraform init (prod)
+        if: ${{ hashFiles('terraform/envs/prod/*.tf') != '' }}
+        working-directory: terraform/envs/prod
+        run: terraform init -backend=false
+
+      - name: Terraform validate (prod)
+        if: ${{ hashFiles('terraform/envs/prod/*.tf') != '' }}
+        working-directory: terraform/envs/prod
+        run: terraform validate
