@@ -1,0 +1,36 @@
+name: 'Terraform PR Check'
+
+on:
+  pull_request:
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      
+    - name: Setup Terraform 
+      uses: hashicorp/setup-terraform@v2
+      
+    - name: Terraform fmt
+      run: terraform fmt -check -recursive
+      
+    - name: Terraform init
+      run: terraform init -backend=false
+      
+    - name: Terraform validate  
+      run: terraform validate
+      
+    - name: Terraform plan
+      run: |
+        terraform plan -lock=false -refresh=false -out=plan.out
+        terraform show -no-color plan.out
+        
+    - name: Create plan artifact
+      if: failure()
+      uses: actions/upload-artifact@v3
+      with:
+        name: plan.txt
+        path: plan.out
