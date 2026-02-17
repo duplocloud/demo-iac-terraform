@@ -1,0 +1,34 @@
+# NEW CONTENT FOR PR WORKFLOW BASED ON PLAN 
+name: 'Terraform Plan'
+
+on:
+  pull_request:
+    paths:
+      - 'terraform/**'
+      
+env:
+  tf_version: latest
+  tf_working_dir: 'terraform' 
+
+jobs:
+
+  terraform:
+    name: 'Terraform Plan'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository  
+        uses: actions/checkout@v3
+        
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.tf_version }}
+          
+      - name: Terraform Init  
+        run: terraform init
+        working-directory: ${{ env.tf_working_dir }}
+        
+      - name: Terraform Plan
+        run: terraform plan
+        working-directory: ${{ env.tf_working_dir }}
