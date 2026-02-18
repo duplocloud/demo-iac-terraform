@@ -1,0 +1,38 @@
+name: Terraform PR Checks
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  terraform-checks:
+    name: Terraform Validation
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "~> 1.5"
+      
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
+        working-directory: .
+      
+      - name: Terraform Init and Validate - Dev
+        run: |
+          terraform init -backend=false
+          terraform validate
+          terraform plan -lock=false -refresh=false
+        working-directory: terraform/envs/dev
+      
+      - name: Terraform Init and Validate - Prod
+        run: |
+          terraform init -backend=false
+          terraform validate
+          terraform plan -lock=false -refresh=false
+        working-directory: terraform/envs/prod
