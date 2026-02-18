@@ -1,0 +1,7 @@
+output "name_prefix" {
+  value = var.name_prefix
+}
+
+output "tags" {
+  value = var.tags
+}
