@@ -1,0 +1,87 @@
+name: Terraform PR Validation
+
+on:
+  pull_request:
+    branches:
+      - main
+      - master
+    paths:
+      - 'terraform/**'
+      - '.github/workflows/terraform-pr.yml'
+
+jobs:
+  terraform-check:
+    name: Terraform Format and Validate
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.5.0"
+
+      - name: Terraform Format Check
+        id: fmt
+        run: terraform fmt -check -recursive
+        continue-on-error: true
+
+      - name: Terraform Init (dev)
+        id: init-dev
+        run: |
+          cd terraform/envs/dev
+          terraform init -backend=false
+
+      - name: Terraform Validate (dev)
+        id: validate-dev
+        run: |
+          cd terraform/envs/dev
+          terraform validate
+
+      - name: Terraform Plan (dev)
+        id: plan-dev
+        run: |
+          cd terraform/envs/dev
+          terraform plan -lock=false -refresh=false
+        continue-on-error: true
+
+      - name: Terraform Init (prod)
+        id: init-prod
+        run: |
+          cd terraform/envs/prod
+          terraform init -backend=false
+
+      - name: Terraform Validate (prod)
+        id: validate-prod
+        run: |
+          cd terraform/envs/prod
+          terraform validate
+
+      - name: Comment PR
+        uses: actions/github-script@v7
+        if: github.event_name == 'pull_request'
+        with:
+          script: |
+            const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+            #### Terraform Initialization (dev) ⚙️\`${{ steps.init-dev.outcome }}\`
+            #### Terraform Validation (dev) 🤖\`${{ steps.validate-dev.outcome }}\`
+            #### Terraform Plan (dev) 📖\`${{ steps.plan-dev.outcome }}\`
+            #### Terraform Initialization (prod) ⚙️\`${{ steps.init-prod.outcome }}\`
+            #### Terraform Validation (prod) 🤖\`${{ steps.validate-prod.outcome }}\`
+
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+
+      - name: Fail if format check failed
+        if: steps.fmt.outcome == 'failure'
+        run: |
+          echo "Terraform format check failed. Run 'terraform fmt -recursive' locally."
+          exit 1
