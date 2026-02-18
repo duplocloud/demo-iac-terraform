@@ -1,5 +1,5 @@
 module "common" {
-source      = "../../modules/common"
-name_prefix = var.name_prefix
-tags        = merge(var.tags, { env = "dev" })
+  source      = "../../modules/common"
+  name_prefix = var.name_prefix
+  tags        = merge(var.tags, { env = "dev" })
 }
