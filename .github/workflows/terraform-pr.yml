@@ -1,0 +1,37 @@
+name: 'Terraform PR Checks'
+
+on:
+  pull_request:
+    paths:
+      - 'terraform/**'
+
+env:
+  TERRAFORM_VERSION: 1.2.0
+
+jobs:
+
+  terraform-checks:
+    name: 'Terraform'
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout 
+      uses: actions/checkout@v2
+        
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+    - name: Terraform fmt
+      run: terraform fmt -check -recursive
+
+    - name: Terraform init
+      run: terraform init -backend=false
+
+    - name: Terraform validate
+      run: terraform validate
+
+    - name: Terraform plan
+      run: terraform plan -lock=false -refresh=false -input=false

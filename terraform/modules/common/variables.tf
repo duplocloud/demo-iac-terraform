@@ -1,18 +1,10 @@
-variable “name_prefix” {
-type = string
+variable "name_prefix" {
+  description = "Name prefix to use for resources"
+  type        = string
 }
 
-variable “tags” {
-type    = map(string)
-default = {}
-}
-EOF
-
-cat > terraform/modules/common/outputs.tf <<‘EOF’
-output “name_prefix” {
-value = var.name_prefix
-}
-
-output “tags” {
-value = var.tags
+variable "tags" {
+  description = "Tags to apply to resources"
+  type        = map(string)
+  default     = {}
 }
