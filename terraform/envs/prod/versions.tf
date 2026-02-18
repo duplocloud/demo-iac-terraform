@@ -1,35 +1,35 @@
 terraform {
-required_version = “>= 1.5.0”
+required_version = ">= 1.5.0"
 
 required_providers {
 aws = {
-source  = “hashicorp/aws”
-version = “>= 5.0”
+source  = "hashicorp/aws"
+version = ">= 5.0"
 }
 }
 }
 EOF
 
-cat > terraform/envs/prod/providers.tf <<‘EOF’
-provider “aws” {
+cat > terraform/envs/prod/providers.tf <<'EOF'
+provider "aws" {
 region = var.aws_region
 }
 EOF
 
-cat > terraform/envs/prod/variables.tf <<‘EOF’
-variable “aws_region” {
+cat > terraform/envs/prod/variables.tf <<'EOF'
+variable "aws_region" {
 type    = string
-default = “us-east-1”
+default = "us-east-1"
 }
 
-variable “name_prefix” {
+variable "name_prefix" {
 type    = string
-default = “demo”
+default = "demo"
 }
 
-variable “tags” {
+variable "tags" {
 type = map(string)
 default = {
-owner = “ai-demo”
+owner = "ai-demo"
 }
 }
