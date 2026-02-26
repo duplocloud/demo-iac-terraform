@@ -14,3 +14,21 @@ variable "tags" {
     owner = "ai-demo"
   }
 }
+
+variable "db_name" {
+  type        = string
+  default     = "appdb"
+  description = "Application database name"
+}
+
+variable "db_username" {
+  type        = string
+  default     = "dbadmin"
+  description = "Database master username"
+}
+
+variable "db_password" {
+  type        = string
+  sensitive   = true
+  description = "Database master password (set via environment or tfvars)"
+}
