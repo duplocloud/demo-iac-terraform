@@ -5,7 +5,7 @@ resource "aws_dynamodb_table" "app_data" {
 
   attribute {
     name = var.hash_key
-    type = "S"
+    type = var.hash_key_type
   }
 
   # Enable encryption at rest
