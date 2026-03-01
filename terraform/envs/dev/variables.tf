@@ -14,3 +14,15 @@ variable "tags" {
     owner = "ai-demo"
   }
 }
+
+variable "dynamodb_enable_pitr" {
+  description = "Enable point-in-time recovery for DynamoDB table"
+  type        = bool
+  default     = true
+}
+
+variable "dynamodb_enable_streams" {
+  description = "Enable DynamoDB Streams for change data capture"
+  type        = bool
+  default     = false
+}
