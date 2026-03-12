@@ -14,3 +14,9 @@ variable "tags" {
     owner = "ai-demo"
   }
 }
+
+variable "s3_bucket_prefix" {
+  description = "Prefix for S3 bucket name"
+  type        = string
+  default     = "demo-app"
+}
